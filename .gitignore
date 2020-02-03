@@ -1,7 +1,10 @@
-.ipynb
+*.ipynb
 !Genetics.ipynb
+.ipynb_checkpoints
 
-.vcf
-.gz
+
+X_Chrom
+*.vcf
+*.gz
 
 __pycache__
