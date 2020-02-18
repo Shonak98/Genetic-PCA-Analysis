@@ -7,7 +7,8 @@ plink2 \
   --mind 0.2 \
   --recode \
   --out chr22
-  
+
 plink2 \
   --bfile chr22 \
-  --pca 2
+  --pca 2 \
+  --out eig

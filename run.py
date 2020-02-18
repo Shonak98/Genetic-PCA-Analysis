@@ -24,4 +24,4 @@ if __name__ ==  '__main__':
         os.system('chmod 700 process.sh')
         os.system('./process.sh')
 
-        plot('data/eig.eigenvec')
+        plot('eig.eigenvec')
