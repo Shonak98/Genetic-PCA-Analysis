@@ -21,7 +21,7 @@ def plot(eig_path):
 if __name__ ==  '__main__':
     arguments = sys.argv
     if arguments[1] == 'data-test':
-        os.system('chmod 700 process.sh')
-        os.system('./process.sh')
+        os.system('chmod 700 src/process.sh')
+        os.system('./src/process.sh')
 
         plot('eig.eigenvec')
