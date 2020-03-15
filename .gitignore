@@ -1,11 +1,8 @@
-*.ipynb
-!Genetics.ipynb
 .ipynb_checkpoints
 
-
-*Chrom
-*.vcf
-*.gz
-!chr22_test.vcf.gz
+####### created data files
+references
+data/converted
+data/vcf_loc
 
 __pycache__
