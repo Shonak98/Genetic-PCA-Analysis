@@ -40,7 +40,7 @@ def project(params):
     zipped_lst = [f"{chrom}.vcf.gz" for chrom in chrom_lst]
     vcf_concat(zipped_lst, params['merged_vcf'], vcf_dir)
 
-    pca(params['merged_vcf'], param['fil_output'], params['eigen_file'], vcf_dir)
+    pca(params['merged_vcf'], params['fil_output'], params['eigen_file'], vcf_dir)
 
     eigen_file = vcf_dir + '/' + params['eigen_file'] + '.eigenvec'
     plot_clusters(eigen_file, chrom_lst, picture_name = params['picture_name'])
