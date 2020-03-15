@@ -1,0 +1,14 @@
+{
+    "references" : "/datasets/dsc180a-wi20-public/Genome/resources/hg38/",
+    "chromosomes": [0,"-",16,19, "-", 22],
+    "outpath": ["results"],
+    "directory" : "/datasets/dsc180a-wi20-public/Genome/vcf/ALL.chr",
+    "extension" : ".shapeit2_integrated_v1a.GRCh38.20181129.phased.vcf.gz",
+    "chromosome_links" : ["ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG00096/sequence_read/",
+                          "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG00097/sequence_read/",
+                          "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG00100/sequence_read/"],
+    "maf" : 0.3,
+    "geno" : 0.4,
+    "mind": 0.3,
+    "docker-image": "ucsdets/dsc180a-genetics"
+}

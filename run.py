@@ -15,13 +15,14 @@ def plot(eig_path):
             y_val.append(float(spl[3]))
 
     plt.scatter(x_val,y_val)
-    plt.save_fig('pca.png')
+    plt.savefig('pca.png')
 
 
 if __name__ ==  '__main__':
     arguments = sys.argv
+    print(arguments)
     if arguments[1] == 'data-test':
-        os.system('chmod 700 src/process.sh')
-        os.system('./src/process.sh')
+        os.system('chmod 700 process.sh')
+        os.system('./process.sh')
 
         plot('eig.eigenvec')
