@@ -2,8 +2,8 @@ plink2 \
   --vcf $1 \
   --make-bed \
   --snps-only \
-  --maf $5 \
-  --geno $6 \
-  --mind $7 \
-  --recode ${4:- }\
+  --maf $4 \
+  --geno $5 \
+  --mind $6 \
+  --recode ${7:- }\
   --out $2/$3

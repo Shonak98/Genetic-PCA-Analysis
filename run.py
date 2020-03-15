@@ -1,28 +1,57 @@
-import os
-import subprocess as sp
 import sys
-from matplotlib import pyplot as plt
+sys.path.insert(0, f"{sys.path[0]}/src")
+
+import json
+from etl import *
+
+def load(params):
+    links = params['chromosome_links']
+    outpath = params['outpath']
+    
+    for link in links:
+        file_name = link[-link[::-1].find('/'):]
+        data_pull(link, file_name, outpath)
+        unzip(f"{outpath}/{file_name}")
 
 
-def plot(eig_path):
-    x_val = []
-    y_val = []
-    with open(eig_path) as eigen:
-        for i in eigen:
-            spl = i.split()
-    #         if spl[0][:2]== 'HG':
-            x_val.append(float(spl[2]))
-            y_val.append(float(spl[3]))
+def project(params):
+    
+    ######## create reference files
+    create_references(params["references"], params["new_ref_location"])
 
-    plt.scatter(x_val,y_val)
-    plt.savefig('pca.png')
-
-
+    ######## conversions
+    fasta = params["new_ref_location"] + '/' + get_fasta_location(params["new_ref_location"])
+    fastq_to_bam(params['test_fastq'], fasta, params['conversion_dir'], result_name = params['bam_name'])
+    bam_to_vcf(params['bam_name'], fasta, params['conversion_dir'], output_name = params['vcf_name'])
+    
+    ######## vcf analysis 
+    chrom_lst = get_chrom_list(params['chromosomes'])
+    directory = params['directory']
+    extension = params['extension']
+    vcf_dir = params['vcf_dir']
+    
+    vcf_lst = [f'{directory}{chrom}{extension}' for chrom in chrom_lst]
+    
+    for ind, vcf in enumerate(vcf_lst):
+        filtering_vcf(vcf, chrom_lst[ind], vcf_dir, params['maf'], 
+                   params['geno'], params['mind'], 'vcf', keep_files = False)
+        
+    zipped_lst = [f"{chrom}.vcf.gz" for chrom in chrom_lst]
+    vcf_concat(zipped_lst, params['merged_vcf'], vcf_dir)
+    
+    pca(params['merged_vcf'], 'vcf', params['eigen_file'], vcf_dir)
+    
+    eigen_file = vcf_dir + '/' + params['eigen_file'] + '.eigenvec'
+    plot_clusters(eigen_file, picture_name = params['picture_name'])
+    
+        
 if __name__ ==  '__main__':
     arguments = sys.argv
-    print(arguments)
-    if arguments[1] == 'data-test':
-        os.system('chmod 700 process.sh')
-        os.system('./process.sh')
-
-        plot('eig.eigenvec')
+    params = json.load(open("config/params.json"))
+    
+    if 'load' in arguments:
+        load(params)
+    
+    if 'test-project' in arguments:
+        project(params)
+    

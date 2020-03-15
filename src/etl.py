@@ -74,12 +74,14 @@ def create_references(location, references):
     if (fasta == '') and (validate_dict_file(references) == False): 
         os.system(f"cp -r {location}* {references}")
     
+    
+    fasta = get_fasta_location(references)
     os.system(f"samtools faidx {references}/{fasta}")
     
     if validate_dict_file(references) == False:
         dict_file = fasta[:-6] + ".dict"
-        os.system(f"gatk CreateSequenceDictionary --REFERENCE {references}/{fasta} \
-                   --OUTPUT {references}/{dict_file}")
+        os.system(f"gatk CreateSequenceDictionary --REFERENCE '{references}/{fasta}' \
+                   --OUTPUT '{references}/{dict_file}'")
     
 
     
@@ -118,24 +120,34 @@ def unzip(file):
     return
     
     
+    
 ################## data conversion functions
 
-def fastq_to_bam(fastq, fasta, read_group = "default", result_name = None, keep_sam = True):
+def fastq_to_bam(fastq, fasta, directory, read_group = "default", result_name = None, keep_sam = True):
+    if os.path.isdir(directory) == False:
+        os.system(f"mkdir {directory}")
+    
     no_ext = fastq[-fastq[::-1].find('/'):-3]
     if result_name != None:
         no_ext = str(result_name)
+        
+    if no_ext[-4:] == ".bam":
+        no_ext = no_ext[:-4]
     
-    os.system("chmod 700 fq_conversion.sh")
+    os.system("chmod 700 src/fq_conversion.sh")
     if read_group == "default":
-        os.system(f"./fq_conversion.sh {fastq} {fasta} {no_ext}")
+        os.system(f"./src/fq_conversion.sh {fastq} {fasta} {directory}/{no_ext}")
     else:
-        os.system(f"./fq_conversion.sh {fastq} {fasta} {no_ext} {read_group}")
+        os.system(f"./src/fq_conversion.sh {fastq} {fasta} {directory}/{no_ext} {read_group}")
         
     if not keep_sam:
         os.system(f"rm -rf {no_ext}.sam")
               
 
-def bam_to_vcf(bam, fasta, output_name = None):
+def bam_to_vcf(bam, fasta, directory, output_name = None):
+    if os.path.isdir(directory) == False:
+        os.system(f"mkdir {directory}")
+    
     if '/' in bam:
         no_ext = bam[-bam[::-1].find('/'):-4]
     else:
@@ -144,19 +156,23 @@ def bam_to_vcf(bam, fasta, output_name = None):
     if output_name != None:
         no_ext = str(output_name)
     
-    os.system("chmod 700 bam_conversion.sh")
-    os.system(f"./bam_conversion.sh {bam} {fasta} {no_ext}")
+    os.system("chmod 700 src/bam_conversion.sh")
+    os.system(f"./src/bam_conversion.sh {directory}/{bam} {fasta} {directory}/{no_ext}")
             
 
 
 ################## data manipulations
 
-def filtering_vcf(vcf, output_name, output_type, directory, maf, geno, mind, keep_files = True):
+def filtering_vcf(vcf, output_name, directory, maf, geno, mind, output_type = '', keep_files = True):
     if os.path.isdir(directory) == False:
         os.system(f"mkdir {directory}")
     
-    os.system("chmod 700 filtering.sh")
-    os.system(f"./filtering.sh {vcf} {directory} {output_name} {output_type} {maf} {geno} {mind}")
+    os.system("chmod 700 src/filtering.sh")
+    
+    if output_type != '':
+        os.system(f"./src/filtering.sh {vcf} {directory} {output_name} {maf} {geno} {mind} {output_type}")
+    else:
+        os.system(f"./src/filtering.sh {vcf} {directory} {output_name} {maf} {geno} {mind}")
     
     if "vcf" in output_type: 
         os.system(f"bgzip -f {directory}/{output_name}.vcf > {directory}/{output_name}.vcf.gz")
@@ -168,25 +184,25 @@ def filtering_vcf(vcf, output_name, output_type, directory, maf, geno, mind, kee
         os.system(f'rm -rf {directory}/{output_name}.nosex')
     
 
-def vcf_concat(vcf_lst, output):
+def vcf_concat(vcf_lst, output, directory):
     string_lst = "bcftools concat "
     for vcf in vcf_lst:
-        string_lst += f"{vcf} "
+        string_lst += f"{directory}/{vcf} "
     
-    string_lst += f"-o {output}.vcf" 
+    string_lst += f"-o {directory}/{output}" 
     os.system(string_lst)
     
     
-def pca(file, file_type, output, pca_num = 2):
+def pca(file, file_type, output, directory, pca_num = 2):
     if file_type == 'vcf':
-        os.system(f"plink2 --vcf {file} --pca {pca_num} --out {output}")
-    elif file_type == 'bfiles':
-        os.system(f"plink2 --bfile {file} --pca {pca_num} --out {output}")
+        os.system(f"plink2 --vcf {directory}/{file} --pca {pca_num} --out {directory}/{output}")
+    elif file_type == 'bfile':
+        os.system(f"plink2 --bfile {directory}/{file} --pca {pca_num} --out {directory}/{output}")
 
 
 ################## analysis functions
 
-def plot_clusters(eig_file, picture_name = None, codes_file = "igsr_samples.tsv", with_colors = True):
+def plot_clusters(eig_file, picture_name = None, codes_file = "data/igsr_samples.tsv", with_colors = True):
     """
     Plots clusters from filtered genetic data
     
@@ -207,5 +223,4 @@ def plot_clusters(eig_file, picture_name = None, codes_file = "igsr_samples.tsv"
         sns.scatterplot(x = super_code.x, y = super_code.y, edgecolor = None, s= 5)
     
     if picture_name != None:
-        plt.savefig(picture_name, bbox_inches='tight')    
-    
+        plt.savefig(picture_name, bbox_inches='tight')   
