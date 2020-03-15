@@ -5,4 +5,6 @@ references
 data/converted
 data/vcf_loc
 
+*.png
+
 __pycache__
