@@ -34,8 +34,8 @@ def project(params):
 
     for ind, vcf in enumerate(vcf_lst):
         filtering_vcf(vcf, chrom_lst[ind], vcf_dir, params['maf'],
-                   params['geno'], params['mind'], param['fil_output'],
-                   keep_files = params['keep_filtered'])
+                   params['geno'], params['mind'], params['fil_output'],
+                   keep_files = bool(params['keep_filtered']))
 
     zipped_lst = [f"{chrom}.vcf.gz" for chrom in chrom_lst]
     vcf_concat(zipped_lst, params['merged_vcf'], vcf_dir)
