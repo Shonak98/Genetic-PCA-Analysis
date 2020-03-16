@@ -15,6 +15,10 @@ import time
 ############### param config functions
 
 def get_chrom_list(chr_lst):
+    """
+    Function that allows for simpler chromosome selection in params.json by
+    converting a '-' to all chromosomes in between the numbers
+    """
     chromes = []
 
     for ind, curr in enumerate(chr_lst):
@@ -31,6 +35,11 @@ def get_chrom_list(chr_lst):
 ############## directory set up functions
 
 def get_files_in_directory(directory):
+    """
+    Gives all the files in a directory as a list to more easily find
+    a specified file. Such as a dict or fasta file
+    """
+    
     files = []
     locations_file = "locations.txt"
     if os.path.isdir(directory):
@@ -45,6 +54,10 @@ def get_files_in_directory(directory):
 
 
 def get_fasta_location(directory):
+    """
+    Gives the file name for the fasta file if given its location
+    """
+    
     files = get_files_in_directory(directory)
     location = ''
     for j in files:
@@ -54,6 +67,10 @@ def get_fasta_location(directory):
 
 
 def validate_dict_file(directory):
+    """
+    Checks if the dict file in references exists
+    """
+    
     files = get_files_in_directory(directory)
     fasta = get_fasta_location(directory)
     if fasta != '':
@@ -64,6 +81,9 @@ def validate_dict_file(directory):
 
 
 def create_references(location, references):
+    """
+    Set up the references directory that holds the fasta and dict files used by gatk
+    """
     if location[-1] != '/':
         location += '/'
     if os.path.isdir(references) == False:
@@ -124,6 +144,12 @@ def unzip(file):
 ################## data conversion functions
 
 def fastq_to_bam(fastq, fasta, directory, read_group = "default", result_name = None, keep_sam = True):
+    """
+    Converts fastq file to sam file and then to a bam file through bwa and gatk. The read group can
+    be specified if wanted. The output will be called the same name as the fastq if not specified.
+    The keep_sam is used if you want to keep the intermediary sam file or delete it at the end.
+    
+    """
     if os.path.isdir(directory) == False:
         os.system(f"mkdir {directory}")
 
@@ -145,6 +171,10 @@ def fastq_to_bam(fastq, fasta, directory, read_group = "default", result_name = 
 
 
 def bam_to_vcf(bam, fasta, directory, output_name = None):
+    """
+    Converts a bam file into a vcf using a given fasta file. Output name is same as bam
+    unless specified
+    """
     if os.path.isdir(directory) == False:
         os.system(f"mkdir {directory}")
 
@@ -164,6 +194,9 @@ def bam_to_vcf(bam, fasta, directory, output_name = None):
 ################## data manipulations
 
 def filtering_vcf(vcf, output_name, directory, maf, geno, mind, output_type = '', keep_files = True):
+    """
+    Uses plink2 and shell scripts to filter a vcf and keep files based on the output types and param
+    """
     if os.path.isdir(directory) == False:
         os.system(f"mkdir {directory}")
 
@@ -181,10 +214,14 @@ def filtering_vcf(vcf, output_name, directory, maf, geno, mind, output_type = ''
         os.system(f'rm -rf {directory}/{output_name}.bed')
         os.system(f'rm -rf {directory}/{output_name}.bim')
         os.system(f'rm -rf {directory}/{output_name}.bam')
+        os.system(f'rm -rf {directory}/{output_name}.fam')
         os.system(f'rm -rf {directory}/{output_name}.nosex')
 
 
 def vcf_concat(vcf_lst, output, directory):
+    """
+    Concats all the vcfs in vcf_lst from specified directory into a single large vcf named by output
+    """
     string_lst = "bcftools concat "
     for vcf in vcf_lst:
         string_lst += f"{directory}/{vcf} "
@@ -194,6 +231,9 @@ def vcf_concat(vcf_lst, output, directory):
 
 
 def pca(file, file_type, output, directory, pca_num = 2):
+    """
+    Performs PCA using a given file and places it into given output
+    """
     if file_type == 'vcf':
         os.system(f"plink2 --vcf {directory}/{file} --pca {pca_num} --out {directory}/{output}")
     elif file_type == 'bfile':
