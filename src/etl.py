@@ -16,7 +16,7 @@ import time
 
 def get_chrom_list(chr_lst):
     """
-    Function that allows for simpler chromosome selection in params.json by
+    Function that allows for simpler chromosome selection in test-params.json by
     converting a '-' to all chromosomes in between the numbers
     """
     chromes = []
@@ -39,7 +39,7 @@ def get_files_in_directory(directory):
     Gives all the files in a directory as a list to more easily find
     a specified file. Such as a dict or fasta file
     """
-    
+
     files = []
     locations_file = "locations.txt"
     if os.path.isdir(directory):
@@ -57,7 +57,7 @@ def get_fasta_location(directory):
     """
     Gives the file name for the fasta file if given its location
     """
-    
+
     files = get_files_in_directory(directory)
     location = ''
     for j in files:
@@ -70,7 +70,7 @@ def validate_dict_file(directory):
     """
     Checks if the dict file in references exists
     """
-    
+
     files = get_files_in_directory(directory)
     fasta = get_fasta_location(directory)
     if fasta != '':
@@ -93,7 +93,6 @@ def create_references(location, references):
 
     if (fasta == '') and (validate_dict_file(references) == False):
         os.system(f"cp -r {location}* {references}")
-
 
     fasta = get_fasta_location(references)
     os.system(f"samtools faidx {references}/{fasta}")
@@ -148,7 +147,7 @@ def fastq_to_bam(fastq, fasta, directory, read_group = "default", result_name = 
     Converts fastq file to sam file and then to a bam file through bwa and gatk. The read group can
     be specified if wanted. The output will be called the same name as the fastq if not specified.
     The keep_sam is used if you want to keep the intermediary sam file or delete it at the end.
-    
+
     """
     if os.path.isdir(directory) == False:
         os.system(f"mkdir {directory}")
@@ -242,7 +241,7 @@ def pca(file, file_type, output, directory, pca_num = 2):
 
 ################## analysis functions
 
-def plot_clusters(eig_file, chrom_lst, picture_name = None, codes_file = "data/igsr_samples.tsv",
+def plot_clusters(eig_file, chrom_lst, picture_name = None, codes_file = "references/igsr_samples.tsv",
                   with_colors = True):
     """
     Plots clusters from filtered genetic data
@@ -268,4 +267,4 @@ def plot_clusters(eig_file, chrom_lst, picture_name = None, codes_file = "data/i
     plt.ylabel("PCA Component 2")
 
     if picture_name != None:
-        plt.savefig(picture_name, bbox_inches='tight')   
+        plt.savefig(picture_name, bbox_inches='tight')

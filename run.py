@@ -22,7 +22,7 @@ def load(params):
 def project(params):
     """
     Uses config/params.json arguments along with etl functions in transformations of the file data
-    
+
     """
 
     ######## create reference files
@@ -47,7 +47,7 @@ def project(params):
                    keep_files = bool(params['keep_filtered']))
 
     zipped_lst = [f"{chrom}.vcf.gz" for chrom in chrom_lst] ## gives vcf file names
-    vcf_concat(zipped_lst, params['merged_vcf'], vcf_dir) ### combines vcfs 
+    vcf_concat(zipped_lst, params['merged_vcf'], vcf_dir) ### combines vcfs
 
     ### performs pca on chosen vcfs
     pca(params['merged_vcf'], params['fil_output'], params['eigen_file'], vcf_dir)
@@ -59,7 +59,7 @@ def project(params):
 
 if __name__ ==  '__main__':
     arguments = sys.argv
-    params = json.load(open("config/params.json"))
+    params = json.load(open("config/test-params.json"))
 
     if 'load' in arguments:
         load(params)

@@ -1,9 +1,8 @@
 .ipynb_checkpoints
 
 ####### created data files
-references
-data/converted
-data/vcf_loc
+ref
+data
 
 *.png
 
